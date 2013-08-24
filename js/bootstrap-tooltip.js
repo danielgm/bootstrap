@@ -79,7 +79,7 @@
       return options
     }
 
-  , enter: function (e) {
+  , enter: function (e, targetOverride) {
       var defaults = $.fn[this.type].defaults
         , options = {}
         , self
@@ -88,28 +88,36 @@
         if (defaults[key] != value) options[key] = value
       }, this)
 
-      self = $(e.currentTarget)[this.type](options).data(this.type)
-
-      if (!self.options.delay || !self.options.delay.show) return self.show()
-
-      clearTimeout(this.timeout)
-      self.hoverState = 'in'
-      this.timeout = setTimeout(function() {
-        if (self.hoverState == 'in') self.show()
-      }, self.options.delay.show)
-    }
-
-  , leave: function (e) {
-      var self = $(e.currentTarget)[this.type](this._options).data(this.type)
+      self = $(targetOverride || e.currentTarget)[this.type](options).data(this.type)
 
       if (this.timeout) clearTimeout(this.timeout)
-      if (!self.options.delay || !self.options.delay.hide) return self.hide()
-
-      self.hoverState = 'out'
-      this.timeout = setTimeout(function() {
-        if (self.hoverState == 'out') self.hide()
-      }, self.options.delay.hide)
+      self.hoverState = 'in'
+			if (!this.shown) {
+				this.timeout = setTimeout(function() {
+					if (self.hoverState == 'in') self.show()
+				}, self.options.delay.show)
+			}
     }
+	
+	, tipenter: function (e) {
+		this.enter(e, this.$element);
+	}
+
+  , leave: function (e, targetOverride) {
+      var self = $(targetOverride || e.currentTarget)[this.type](this._options).data(this.type)
+
+      if (this.timeout) clearTimeout(this.timeout)
+      self.hoverState = 'out'
+			if (this.shown) {
+				this.timeout = setTimeout(function() {
+					if (self.hoverState == 'out') self.hide()
+				}, self.options.delay.hide)
+			}
+    }
+
+	, tipleave: function (e) {
+		this.leave(e, this.$element);
+	}
 
   , show: function () {
       var $tip
@@ -162,6 +170,7 @@
 
         this.applyPlacement(tp, placement)
         this.$element.trigger('shown')
+				this.shown = true
       }
     }
 
@@ -246,6 +255,7 @@
         $tip.detach()
 
       this.$element.trigger('hidden')
+			this.shown = false
 
       return this
     }
@@ -281,7 +291,9 @@
     }
 
   , tip: function () {
-      return this.$tip = this.$tip || $(this.options.template)
+      return this.$tip = this.$tip || ($(this.options.template)
+				.on('mouseenter.' + this.type, $.proxy(this.tipenter, this))
+				.on('mouseleave.' + this.type, $.proxy(this.tipleave, this)))
     }
 
   , arrow: function(){
