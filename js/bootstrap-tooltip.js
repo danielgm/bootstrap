@@ -92,32 +92,32 @@
 
       if (this.timeout) clearTimeout(this.timeout)
       self.hoverState = 'in'
-			if (!this.shown) {
-				this.timeout = setTimeout(function() {
-					if (self.hoverState == 'in') self.show()
-				}, self.options.delay.show)
-			}
+      if (!this.shown) {
+        this.timeout = setTimeout(function() {
+          if (self.hoverState == 'in') self.show()
+        }, self.options.delay.show)
+      }
     }
-	
-	, tipenter: function (e) {
-		this.enter(e, this.$element);
-	}
+  
+  , tipenter: function (e) {
+    this.enter(e, this.$element);
+  }
 
   , leave: function (e, targetOverride) {
       var self = $(targetOverride || e.currentTarget)[this.type](this._options).data(this.type)
 
       if (this.timeout) clearTimeout(this.timeout)
       self.hoverState = 'out'
-			if (this.shown) {
-				this.timeout = setTimeout(function() {
-					if (self.hoverState == 'out') self.hide()
-				}, self.options.delay.hide)
-			}
+      if (this.shown) {
+        this.timeout = setTimeout(function() {
+          if (self.hoverState == 'out') self.hide()
+        }, self.options.delay.hide)
+      }
     }
 
-	, tipleave: function (e) {
-		this.leave(e, this.$element);
-	}
+  , tipleave: function (e) {
+    this.leave(e, this.$element);
+  }
 
   , show: function () {
       var $tip
@@ -170,7 +170,7 @@
 
         this.applyPlacement(tp, placement)
         this.$element.trigger('shown')
-				this.shown = true
+        this.shown = true
       }
     }
 
@@ -255,7 +255,7 @@
         $tip.detach()
 
       this.$element.trigger('hidden')
-			this.shown = false
+      this.shown = false
 
       return this
     }
@@ -292,8 +292,8 @@
 
   , tip: function () {
       return this.$tip = this.$tip || ($(this.options.template)
-				.on('mouseenter.' + this.type, $.proxy(this.tipenter, this))
-				.on('mouseleave.' + this.type, $.proxy(this.tipleave, this)))
+        .on('mouseenter.' + this.type, $.proxy(this.tipenter, this))
+        .on('mouseleave.' + this.type, $.proxy(this.tipleave, this)))
     }
 
   , arrow: function(){
